@@ -23,6 +23,7 @@ namespace FastRollButton
     {
         public static void ApplyHooks() => On.RainWorld.OnModsInit += RainWorld_OnModsInit;
 
+
         private static bool isInit = false;
 
         private static void RainWorld_OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
@@ -50,6 +51,8 @@ namespace FastRollButton
         }
 
 
+
+        // Debug Label
         private static FLabel fastRollLabel = null!;
 
         private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
@@ -69,12 +72,13 @@ namespace FastRollButton
         private static void RainWorldGame_ShutDownProcess(On.RainWorldGame.orig_ShutDownProcess orig, RainWorldGame self)
         {
             orig(self);
+
             fastRollLabel.RemoveFromContainer();
         }
 
 
-
-
+        
+        // Fast Roll
         private static void Player_checkInput(On.Player.orig_checkInput orig, Player self)
         {
             orig(self);
@@ -134,7 +138,6 @@ namespace FastRollButton
                 _ => false
             };
         }
-
 
 
         private static void CheckIfFastRoll(Player self)
