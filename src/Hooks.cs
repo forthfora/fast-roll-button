@@ -1,21 +1,8 @@
-﻿using Expedition;
-using ImprovedInput;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
+﻿using IL;
 using RWCustom;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Media;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using UnityEngine;
-using static MonoMod.InlineRT.MonoModRule;
-using static Unity.IO.LowLevel.Unsafe.AsyncReadManagerMetrics;
-using OpCodes = Mono.Cecil.Cil.OpCodes;
-using Random = UnityEngine.Random;
+
 
 namespace FastRollButton
 {
@@ -39,6 +26,7 @@ namespace FastRollButton
                 On.RainWorldGame.ShutDownProcess += RainWorldGame_ShutDownProcess;
 
                 On.Player.checkInput += Player_checkInput;
+                On.RWInput.PlayerInput += RWInput_PlayerInput;
             }
             catch (Exception ex)
             {
@@ -77,56 +65,52 @@ namespace FastRollButton
         }
 
 
-        
+
         // Fast Roll
-        private static void Player_checkInput(On.Player.orig_checkInput orig, Player self)
+        private static Player.InputPackage RWInput_PlayerInput(On.RWInput.orig_PlayerInput orig, int playerNumber, RainWorld rainWorld)
         {
-            orig(self);
+            Player.InputPackage input = orig(playerNumber, rainWorld);
 
-            FastRoll(self);
+            if (rainWorld.processManager.currentMainLoop is not RainWorldGame game) return input;
 
-            CheckIfFastRoll(self);
-        }
-
-
-        private static void FastRoll(Player self)
-        {
-            if (!IsFastRollInput(self)) return;
+            if (game.Players[playerNumber].realizedCreature is not Player player) return input;
 
 
-            if (self.animation != Player.AnimationIndex.Roll) return;
+            if (!IsFastRollInput(player)) return input;
 
 
             // No full down input, apply just enough analogue down input to trigger downDiagonal
-            self.input[0].y = 0;
-            self.input[0].analogueDir = new Vector2(self.input[0].x, -0.06f);
+            input.y = 0;
+            input.analogueDir = new Vector2(input.x, -0.06f);
 
 
             // Taken verbatim from PlayerInputLogic
             if (ModManager.MMF)
             {
-                if (self.input[0].analogueDir.y < -0.05f || self.input[0].y < 0)
+                if (input.analogueDir.y < -0.05f || input.y < 0)
                 {
-                    if (self.input[0].analogueDir.x < -0.05f || self.input[0].x < 0)
-                        self.input[0].downDiagonal = -1;
+                    if (input.analogueDir.x < -0.05f || input.x < 0)
+                        input.downDiagonal = -1;
 
-                    else if (self.input[0].analogueDir.x > 0.05f || self.input[0].x > 0)
-                        self.input[0].downDiagonal = 1;
+                    else if (input.analogueDir.x > 0.05f || input.x > 0)
+                        input.downDiagonal = 1;
                 }
             }
-            else if (self.input[0].analogueDir.y < -0.05f)
+            else if (input.analogueDir.y < -0.05f)
             {
-                if (self.input[0].analogueDir.x < -0.05f)
-                    self.input[0].downDiagonal = -1;
+                if (input.analogueDir.x < -0.05f)
+                    input.downDiagonal = -1;
 
-                else if (self.input[0].analogueDir.x > 0.05f)
-                    self.input[0].downDiagonal = 1;
+                else if (input.analogueDir.x > 0.05f)
+                    input.downDiagonal = 1;
             }
+
+            return input;
         }
 
         private static bool IsFastRollInput(Player self)
         {
-            if (Options.isFastRollAutomatic.Value) return true;
+            //if (Options.isFastRollAutomatic.Value) return true;
 
             return self.playerState.playerNumber switch
             {
@@ -139,6 +123,15 @@ namespace FastRollButton
             };
         }
 
+
+
+        // Debug Fast Roll Check
+        private static void Player_checkInput(On.Player.orig_checkInput orig, Player self)
+        {
+            orig(self);
+
+            CheckIfFastRoll(self);
+        }
 
         private static void CheckIfFastRoll(Player self)
         {

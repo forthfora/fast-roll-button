@@ -13,9 +13,9 @@ namespace FastRollButton
 
         #region Options
 
-        public static Configurable<bool> isFastRollAutomatic = instance.config.Bind("isFastRollAutomatic", false, new ConfigurableInfo(
-            "Whether perfect inputs are always in effect when rolling, meaning every roll is a fast roll. Overrides input options below.",
-            null, "", "Automatic Fast Roll?"));
+        //public static Configurable<bool> isFastRollAutomatic = instance.config.Bind("isFastRollAutomatic", false, new ConfigurableInfo(
+        //    "Whether perfect inputs are always in effect when rolling, meaning every roll is a fast roll. Overrides input options below.",
+        //    null, "", "Automatic Fast Roll?"));
 
         public static Configurable<bool> debugDisplay = instance.config.Bind("debugDisplay", false, new ConfigurableInfo(
             "When checked, text will appear in the top left hand corner of the screen indicating whether a fast roll is being performed.",
@@ -80,9 +80,9 @@ namespace FastRollButton
 
             AddTab(ref tabIndex, "Input");
 
-            AddCheckBox(isFastRollAutomatic, (string)isFastRollAutomatic.info.Tags[0]);
+            //AddCheckBox(isFastRollAutomatic, (string)isFastRollAutomatic.info.Tags[0]);
             AddCheckBox(debugDisplay, (string)debugDisplay.info.Tags[0]);
-;            DrawCheckBoxes(ref Tabs[tabIndex]);
+;           DrawCheckBoxes(ref Tabs[tabIndex]);
             AddNewLine(3);
 
             DrawKeybinders(keybindKeyboard, ref Tabs[tabIndex]);
