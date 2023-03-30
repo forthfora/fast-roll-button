@@ -1,6 +1,7 @@
 ﻿using IL;
 using RWCustom;
 using System;
+using System.Linq;
 using UnityEngine;
 
 
@@ -51,7 +52,8 @@ namespace FastRollButton
 
             Futile.stage.AddChild(fastRollLabel);
 
-            fastRollLabel.x = 40.0f;
+            fastRollLabel.alignment = FLabelAlignment.Left;
+            fastRollLabel.x = 10.0f;
             fastRollLabel.y = self.rainWorld.options.ScreenSize.y - 10.0f;
             fastRollLabel.color = new Color(1.0f, 1.0f, 0.5f);
             fastRollLabel.isVisible = false;
@@ -71,12 +73,7 @@ namespace FastRollButton
         {
             Player.InputPackage input = orig(playerNumber, rainWorld);
 
-            if (rainWorld.processManager.currentMainLoop is not RainWorldGame game) return input;
-
-            if (game.Players[playerNumber].realizedCreature is not Player player) return input;
-
-
-            if (!IsFastRollInput(player)) return input;
+            if (!IsFastRollInput(playerNumber)) return input;
 
 
             // No full down input, apply just enough analogue down input to trigger downDiagonal
@@ -108,11 +105,11 @@ namespace FastRollButton
             return input;
         }
 
-        private static bool IsFastRollInput(Player self)
+        private static bool IsFastRollInput(int playerNumber)
         {
             //if (Options.isFastRollAutomatic.Value) return true;
 
-            return self.playerState.playerNumber switch
+            return playerNumber switch
             {
                 0 => Input.GetKey(Options.keybindPlayer1.Value) || Input.GetKey(Options.keybindKeyboard.Value),
                 1 => Input.GetKey(Options.keybindPlayer2.Value),
@@ -131,11 +128,28 @@ namespace FastRollButton
             orig(self);
 
             CheckIfFastRoll(self);
+
+
+            fastRollLabel.text = "Fast Rolling";
+            fastRollLabel.isVisible = fastRollingPlayers.Any(isFastRolling => isFastRolling);
+
+            if (self.room.game.Players.Count == 1) return;
+
+
+            for (int i = fastRollingPlayers.Length -1; i >= 0; i--)
+            {
+                if (!fastRollingPlayers[i]) continue;
+
+                fastRollLabel.text = $"P{i + 1}, {fastRollLabel.text}"; 
+            }
         }
+
+
+        private static readonly bool[] fastRollingPlayers = new bool[4];
 
         private static void CheckIfFastRoll(Player self)
         {
-            fastRollLabel.isVisible = false;
+            fastRollingPlayers[self.playerState.playerNumber] = false;
 
             if (!Options.debugDisplay.Value) return;
 
@@ -148,7 +162,7 @@ namespace FastRollButton
             if (self.input[0].y == -1) return;
 
 
-            fastRollLabel.isVisible = true;
+            fastRollingPlayers[self.playerState.playerNumber] = true;
         }
     }
 }
