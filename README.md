@@ -1,4 +1,4 @@
-# Provides a button (or automatic option) to force the necessary analog inputs to fast roll!
+# Provides a per-player configurable keybind to force the necessary analog inputs to fast roll!
 
 ## Normally, this is only feasible on controller with precise analog inputs; now, you can perform it on keyboard too, with the press of a button!
 
