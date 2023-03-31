@@ -1,0 +1,6 @@
+[h1]Provides a per-player configurable keybind to force the necessary analog inputs to fast roll![/h1]
+
+[b]Normally, this is only feasible on controller with precise analog inputs;
+now, you can perform it on keyboard too, with the press of a button![/b]
+
+[b][u]Source: https://github.com/forthbridge/fast-roll-button[/u][/b]

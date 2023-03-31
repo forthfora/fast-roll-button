@@ -13,10 +13,6 @@ namespace FastRollButton
 
         #region Options
 
-        //public static Configurable<bool> isFastRollAutomatic = instance.config.Bind("isFastRollAutomatic", false, new ConfigurableInfo(
-        //    "Whether perfect inputs are always in effect when rolling, meaning every roll is a fast roll. Overrides input options below.",
-        //    null, "", "Automatic Fast Roll?"));
-
         public static Configurable<bool> debugDisplay = instance.config.Bind("debugDisplay", false, new ConfigurableInfo(
             "When checked, text will appear in the top left hand corner of the screen indicating whether a fast roll is being performed.",
             null, "", "Debug Display?"));
@@ -37,18 +33,17 @@ namespace FastRollButton
         public static Configurable<KeyCode> keybindPlayer4 = instance.config.Bind("keybindPlayer4", KeyCode.Joystick4Button4, new ConfigurableInfo(
             "Keybind to fast roll for Player 4.", null, "", "Player 4"));
 
-
         #endregion
 
         #region Parameters
+
         private readonly float spacing = 20f;
         private readonly float fontHeight = 20f;
         private readonly int numberOfCheckboxes = 2;
         private readonly float checkBoxSize = 60.0f;
         private float CheckBoxWithSpacing => checkBoxSize + 0.25f * spacing;
-        #endregion
 
-        #region Variables
+
         private Vector2 marginX = new();
         private Vector2 pos = new();
 
@@ -57,17 +52,8 @@ namespace FastRollButton
         private readonly List<Configurable<bool>> checkBoxConfigurables = new();
         private readonly List<OpLabel> checkBoxesTextLabels = new();
 
-        private readonly List<Configurable<string>> comboBoxConfigurables = new();
-        private readonly List<List<ListItem>> comboBoxLists = new();
-        private readonly List<bool> comboBoxAllowEmpty = new();
-        private readonly List<OpLabel> comboBoxesTextLabels = new();
-
-        private readonly List<Configurable<int>> sliderConfigurables = new();
-        private readonly List<string> sliderMainTextLabels = new();
-        private readonly List<OpLabel> sliderTextLabelsLeft = new();
-        private readonly List<OpLabel> sliderTextLabelsRight = new();
-
         private readonly List<OpLabel> textLabels = new();
+
         #endregion
 
         private const int NUMBER_OF_TABS = 1;
@@ -80,30 +66,30 @@ namespace FastRollButton
 
             AddTab(ref tabIndex, "Input");
 
-            //AddCheckBox(isFastRollAutomatic, (string)isFastRollAutomatic.info.Tags[0]);
             AddCheckBox(debugDisplay, (string)debugDisplay.info.Tags[0]);
 ;           DrawCheckBoxes(ref Tabs[tabIndex]);
             AddNewLine(3);
 
-            DrawKeybinders(keybindKeyboard, ref Tabs[tabIndex]);
+            DrawKeybinder(keybindKeyboard, ref Tabs[tabIndex]);
             AddNewLine(1);
 
-            DrawKeybinders(keybindPlayer1, ref Tabs[tabIndex]);
+            DrawKeybinder(keybindPlayer1, ref Tabs[tabIndex]);
             AddNewLine(1);
 
-            DrawKeybinders(keybindPlayer2, ref Tabs[tabIndex]);
+            DrawKeybinder(keybindPlayer2, ref Tabs[tabIndex]);
             AddNewLine(1);
 
-            DrawKeybinders(keybindPlayer3, ref Tabs[tabIndex]);
+            DrawKeybinder(keybindPlayer3, ref Tabs[tabIndex]);
             AddNewLine(1);
 
-            DrawKeybinders(keybindPlayer4, ref Tabs[tabIndex]);
+            DrawKeybinder(keybindPlayer4, ref Tabs[tabIndex]);
 
             AddNewLine(1);
             DrawBox(ref Tabs[tabIndex]);
         }
 
         #region UI Elements
+
         private void AddTab(ref int tabIndex, string tabName)
         {
             tabIndex++;
@@ -135,6 +121,8 @@ namespace FastRollButton
             pos.y -= spacingModifier * spacing;
         }
 
+        
+
         private void AddBox()
         {
             marginX += new Vector2(spacing, -spacing);
@@ -154,7 +142,8 @@ namespace FastRollButton
             boxEndPositions.RemoveAt(lastIndex);
         }
 
-        private void DrawKeybinders(Configurable<KeyCode> configurable, ref OpTab tab)
+
+        private void DrawKeybinder(Configurable<KeyCode> configurable, ref OpTab tab)
         {
             string name = (string)configurable.info.Tags[0];
 
@@ -170,6 +159,7 @@ namespace FastRollButton
 
             AddNewLine(2);
         }
+
 
         private void AddCheckBox(Configurable<bool> configurable, string text)
         {
@@ -220,111 +210,6 @@ namespace FastRollButton
             checkBoxesTextLabels.Clear();
         }
 
-        private void AddComboBox(Configurable<string> configurable, List<ListItem> list, string text, bool allowEmpty = false)
-        {
-            OpLabel opLabel = new(new Vector2(), new Vector2(0.0f, fontHeight), text, FLabelAlignment.Center, false);
-            comboBoxesTextLabels.Add(opLabel);
-            comboBoxConfigurables.Add(configurable);
-            comboBoxLists.Add(list);
-            comboBoxAllowEmpty.Add(allowEmpty);
-        }
-
-        private void DrawComboBoxes(ref OpTab tab)
-        {
-            if (comboBoxConfigurables.Count != comboBoxesTextLabels.Count) return;
-            if (comboBoxConfigurables.Count != comboBoxLists.Count) return;
-            if (comboBoxConfigurables.Count != comboBoxAllowEmpty.Count) return;
-
-            float offsetX = (marginX.y - marginX.x) * 0.1f;
-            float width = (marginX.y - marginX.x) * 0.4f;
-
-            for (int comboBoxIndex = 0; comboBoxIndex < comboBoxConfigurables.Count; ++comboBoxIndex)
-            {
-                AddNewLine(1.25f);
-                pos.x += offsetX;
-
-                OpLabel opLabel = comboBoxesTextLabels[comboBoxIndex];
-                opLabel.pos = pos;
-                opLabel.size += new Vector2(width, 2f); // size.y is already set
-                pos.x += width;
-
-                Configurable<string> configurable = comboBoxConfigurables[comboBoxIndex];
-                OpComboBox comboBox = new(configurable, pos, width, comboBoxLists[comboBoxIndex])
-                {
-                    allowEmpty = comboBoxAllowEmpty[comboBoxIndex],
-                    description = configurable.info?.description ?? ""
-                };
-                tab.AddItems(opLabel, comboBox);
-
-                // don't add a new line on the last element
-                if (comboBoxIndex < comboBoxConfigurables.Count - 1)
-                {
-                    AddNewLine();
-                    pos.x = marginX.x;
-                }
-            }
-
-            comboBoxesTextLabels.Clear();
-            comboBoxConfigurables.Clear();
-            comboBoxLists.Clear();
-            comboBoxAllowEmpty.Clear();
-        }
-
-        private void AddSlider(Configurable<int> configurable, string text, string sliderTextLeft = "", string sliderTextRight = "")
-        {
-            sliderConfigurables.Add(configurable);
-            sliderMainTextLabels.Add(text);
-            sliderTextLabelsLeft.Add(new OpLabel(new Vector2(), new Vector2(), sliderTextLeft, alignment: FLabelAlignment.Right)); // set pos and size when drawing
-            sliderTextLabelsRight.Add(new OpLabel(new Vector2(), new Vector2(), sliderTextRight, alignment: FLabelAlignment.Left));
-        }
-
-        private void DrawSliders(ref OpTab tab)
-        {
-            if (sliderConfigurables.Count != sliderMainTextLabels.Count) return;
-            if (sliderConfigurables.Count != sliderTextLabelsLeft.Count) return;
-            if (sliderConfigurables.Count != sliderTextLabelsRight.Count) return;
-
-            float width = marginX.y - marginX.x;
-            float sliderCenter = marginX.x + 0.5f * width;
-            float sliderLabelSizeX = 0.2f * width;
-            float sliderSizeX = width - 2f * sliderLabelSizeX - spacing;
-
-            for (int sliderIndex = 0; sliderIndex < sliderConfigurables.Count; ++sliderIndex)
-            {
-                AddNewLine(2f);
-
-                OpLabel opLabel = sliderTextLabelsLeft[sliderIndex];
-                opLabel.pos = new Vector2(marginX.x, pos.y + 5f);
-                opLabel.size = new Vector2(sliderLabelSizeX, fontHeight);
-                tab.AddItems(opLabel);
-
-                Configurable<int> configurable = sliderConfigurables[sliderIndex];
-                OpSlider slider = new(configurable, new Vector2(sliderCenter - 0.5f * sliderSizeX, pos.y), (int)sliderSizeX)
-                {
-                    size = new Vector2(sliderSizeX, fontHeight),
-                    description = configurable.info?.description ?? ""
-                };
-                tab.AddItems(slider);
-
-                opLabel = sliderTextLabelsRight[sliderIndex];
-                opLabel.pos = new Vector2(sliderCenter + 0.5f * sliderSizeX + 0.5f * spacing, pos.y + 5f);
-                opLabel.size = new Vector2(sliderLabelSizeX, fontHeight);
-                tab.AddItems(opLabel);
-
-                AddTextLabel(sliderMainTextLabels[sliderIndex]);
-                DrawTextLabels(ref tab);
-
-                if (sliderIndex < sliderConfigurables.Count - 1)
-                {
-                    AddNewLine();
-                }
-            }
-
-            sliderConfigurables.Clear();
-            sliderMainTextLabels.Clear();
-            sliderTextLabelsLeft.Clear();
-            sliderTextLabelsRight.Clear();
-        }
 
         private void AddTextLabel(string text, FLabelAlignment alignment = FLabelAlignment.Center, bool bigText = false)
         {
@@ -360,6 +245,7 @@ namespace FastRollButton
             pos.x = marginX.x;
             textLabels.Clear();
         }
+
         #endregion
     }
 }

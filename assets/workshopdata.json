@@ -1,0 +1,16 @@
+{
+  "Title": "Fast Roll Button",
+  "Description": "[h1]Provides a per-player configurable keybind to force the necessary analog inputs to fast roll![/h1]\r\n\r\n[b]Normally, this is only feasible on controller with precise analog inputs;\r\nnow, you can perform it on keyboard too, with the press of a button![/b]\r\n\r\n[b][u]Source: https://github.com/forthbridge/fast-roll-button[/u][/b]",
+  "ID": "fastrollbutton",
+  "Version": "1.0.2",
+  "TargetGameVersion": "v1.9.07",
+  "Requirements": "",
+  "RequirementNames": "",
+  "Authors": "forthbridge",
+  "Visibility": "Unlisted",
+  "Tags": [
+    "Accessibility"
+  ],
+  "WorkshopID": 2954863557,
+  "UploadFilesOnly": false
+}

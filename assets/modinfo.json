@@ -1,7 +1,7 @@
 {
 	"id": "fastrollbutton",
 	"name": "Fast Roll Button",
-	"version": "1.0.1",
+	"version": "1.0.3",
 	"authors": "forthbridge",
 	"description": "Provides a button to force the necessary analog inputs to fast roll!<LINE><LINE>Normally, this is only feasible on controller, or virtual controller, with analog inputs;\nnow, you can perform it on keyboard too, with just the press of a button!<LINE><LINE>Source: https://github.com/forthbridge/fast-roll-button",
 	"requirements": [],

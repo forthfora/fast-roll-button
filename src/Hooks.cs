@@ -1,5 +1,4 @@
-﻿using IL;
-using RWCustom;
+﻿using RWCustom;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -69,16 +68,19 @@ namespace FastRollButton
 
 
         // Fast Roll
+        const float FAST_ROLL_Y_INPUT = -0.06f;
+
         private static Player.InputPackage RWInput_PlayerInput(On.RWInput.orig_PlayerInput orig, int playerNumber, RainWorld rainWorld)
         {
             Player.InputPackage input = orig(playerNumber, rainWorld);
 
             if (!IsFastRollInput(playerNumber)) return input;
 
+            if (input.y != 0) return input;
+
 
             // No full down input, apply just enough analogue down input to trigger downDiagonal
-            input.y = 0;
-            input.analogueDir = new Vector2(input.x, -0.06f);
+            input.analogueDir.y = FAST_ROLL_Y_INPUT;
 
 
             // Taken verbatim from PlayerInputLogic
@@ -107,8 +109,6 @@ namespace FastRollButton
 
         private static bool IsFastRollInput(int playerNumber)
         {
-            //if (Options.isFastRollAutomatic.Value) return true;
-
             return playerNumber switch
             {
                 0 => Input.GetKey(Options.keybindPlayer1.Value) || Input.GetKey(Options.keybindKeyboard.Value),
