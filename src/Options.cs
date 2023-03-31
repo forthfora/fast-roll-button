@@ -18,6 +18,7 @@ namespace FastRollButton
             null, "", "Debug Display?"));
 
 
+
         public static Configurable<KeyCode> keybindKeyboard = instance.config.Bind("keybindKeyboard", KeyCode.LeftAlt, new ConfigurableInfo(
             "Keybind to fast roll for Keyboard.", null, "", "Keyboard"));
 
@@ -67,7 +68,7 @@ namespace FastRollButton
             AddTab(ref tabIndex, "Input");
 
             AddCheckBox(debugDisplay, (string)debugDisplay.info.Tags[0]);
-;           DrawCheckBoxes(ref Tabs[tabIndex]);
+            DrawCheckBoxes(ref Tabs[tabIndex]);
             AddNewLine(3);
 
             DrawKeybinder(keybindKeyboard, ref Tabs[tabIndex]);
