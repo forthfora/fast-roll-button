@@ -83,7 +83,7 @@ namespace FastRollButton
             AddCheckBox(inputDisplay, (string)inputDisplay.info.Tags[0]);
             AddCheckBox(debugDisplay, (string)debugDisplay.info.Tags[0]);
             DrawCheckBoxes(ref Tabs[tabIndex]);
-            AddNewLine(3);
+            AddNewLine(4);
 
             DrawKeybinder(keybindKeyboard, ref Tabs[tabIndex]);
             AddNewLine(1);
@@ -98,8 +98,8 @@ namespace FastRollButton
             AddNewLine(1);
 
             DrawKeybinder(keybindPlayer4, ref Tabs[tabIndex]);
+            
 
-            AddNewLine(1);
             DrawBox(ref Tabs[tabIndex]);
 
 
@@ -296,7 +296,7 @@ namespace FastRollButton
                 tab.AddItems(opLabel);
 
                 Configurable<float> configurable = floatSliderConfigurables[sliderIndex];
-                OpFloatSlider slider = new(configurable, new Vector2(sliderCenter - 0.5f * sliderSizeX, pos.y), (int)sliderSizeX)
+                OpFloatSlider slider = new(configurable, new Vector2(sliderCenter - 0.5f * sliderSizeX, pos.y), (int)sliderSizeX, 2)
                 {
                     size = new Vector2(sliderSizeX, fontHeight),
                     description = configurable.info?.description ?? ""
@@ -329,7 +329,7 @@ namespace FastRollButton
         public static Vector2 inputDisplayOrigin = Vector2.zero;
 
 
-        public static Configurable<bool> inputIsIndicator = instance.config.Bind("inputIsIndicator", true, new ConfigurableInfo(
+        public static Configurable<bool> inputIsIndicator = instance.config.Bind("inputIsIndicator", false, new ConfigurableInfo(
             "When checked, input is shown by the small indicator, fast roll being performed is shown by the button." +
             "\nWhen unchecked, this is reversed.",
             null, "", "Input is Indicator?"));
@@ -344,9 +344,14 @@ namespace FastRollButton
             "How opaque the display is (100% by default).",
             new ConfigAcceptableRange<float>(0.0f, 1.0f), "", "Alpha"));
 
-        public static readonly Configurable<float> scale = instance.config.Bind("scale", 0.3f, new ConfigurableInfo(
-            "The scale factor of the display (30% by default).",
-            new ConfigAcceptableRange<float>(0.3f, 1.0f), "", "Scale"));
+        public static readonly Configurable<float> scale = instance.config.Bind("scale", 0.5f, new ConfigurableInfo(
+            "The scale factor of the display (50% by default).",
+            new ConfigAcceptableRange<float>(0.2f, 1.0f), "", "Scale"));
+
+
+
+        public static Configurable<string> inputDisplayText = instance.config.Bind("inputDisplayText", "Roll", new ConfigurableInfo(
+            "Text shown on the Input Display.", null, "", "Input Display Text"));
 
 
 
@@ -377,10 +382,15 @@ namespace FastRollButton
             AddNewLine(1);
 
             AddFloatSlider(alpha, (string)alpha.info.Tags[0], "0%", "100%");
-            AddFloatSlider(scale, (string)scale.info.Tags[0], "30%", "100%");
+            AddFloatSlider(scale, (string)scale.info.Tags[0], "20%", "100%");
             DrawFloatSliders(ref Tabs[tabIndex]);
 
-            AddNewLine(1);
+
+            var _inputDisplayText = new OpTextBox(inputDisplayText, new Vector2(235.0f, 207.5f), 150.0f);
+            Tabs[tabIndex].AddItems(_inputDisplayText, new OpLabel(new Vector2(90.0f, 210.0f), new Vector2(150f, 16.0f), (string)inputDisplayText.info.Tags[0]));
+
+
+            AddNewLine(2);
             
 
             Vector2 offset = new Vector2(0.0f, -150.0f);

@@ -47,7 +47,7 @@ namespace FastRollButton
         {
             buttons = new InputButton[]
             {
-                new InputButton(this, new Vector2(0.0f, 0.0f) * InputButton.Spacing, "Fast\nRoll" , isIndicator => {
+                new InputButton(this, new Vector2(0.0f, 0.0f) * InputButton.Spacing, Options.inputDisplayText.Value , isIndicator => {
                     if (isIndicator == Options.inputIsIndicator.Value)
                         return Hooks.IsAnyFastRollInput();
                     

@@ -87,10 +87,10 @@ namespace FastRollButton
             c.AddChild(back);
             c.AddChild(front);
 
+            c.AddChild(fastRollIndicator);
+            
             if (key != null) c.AddChild(key);
             if (keySprite != null) c.AddChild(keySprite);
-
-            c.AddChild(fastRollIndicator);
         }
 
         public void RemoveFromContainer()
