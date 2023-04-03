@@ -115,6 +115,9 @@ namespace FastRollButton
         {
             orig(self);
 
+            if (self.Template.type == MoreSlugcats.MoreSlugcatsEnums.CreatureTemplateType.SlugNPC) return;
+            
+            
             CheckIfFastRoll(self);
 
 
@@ -140,9 +143,6 @@ namespace FastRollButton
         private static void CheckIfFastRoll(Player self)
         {
             fastRollingPlayers[self.playerState.playerNumber] = false;
-
-            if (!Options.inputDisplay.Value) return;
-
 
 
             if (self.animation != Player.AnimationIndex.Roll) return;
