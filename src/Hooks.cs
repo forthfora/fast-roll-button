@@ -10,7 +10,6 @@ namespace FastRollButton
     {
         public static void ApplyHooks() => On.RainWorld.OnModsInit += RainWorld_OnModsInit;
 
-
         private static bool isInit = false;
 
         private static void RainWorld_OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
@@ -22,11 +21,18 @@ namespace FastRollButton
 
                 MachineConnector.SetRegisteredOI(Plugin.MOD_ID, Options.instance);
 
-                On.RainWorldGame.ctor += RainWorldGame_ctor;
-                On.RainWorldGame.ShutDownProcess += RainWorldGame_ShutDownProcess;
+                Options.inputDisplayOrigin = new Vector2(10.0f, self.options.ScreenSize.y - 60.0f);
 
                 On.Player.checkInput += Player_checkInput;
                 On.RWInput.PlayerInput += RWInput_PlayerInput;
+
+                On.RainWorldGame.ctor += RainWorldGame_ctor;
+                On.RainWorldGame.ShutDownProcess += RainWorldGame_ShutDownProcess;
+
+
+                On.RoomCamera.ClearAllSprites += RoomCamera_ClearAllSprites;
+                On.RainWorldGame.GrafUpdate += RainWorldGame_GrafUpdate;
+                On.RoomCamera.ctor += RoomCamera_ctor;
             }
             catch (Exception ex)
             {
@@ -36,33 +42,6 @@ namespace FastRollButton
             {
                 orig(self);
             }
-        }
-
-
-
-        // Debug Label
-        private static FLabel fastRollLabel = null!;
-
-        private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
-        {
-            orig(self, manager);
-
-            fastRollLabel = new FLabel(Custom.GetFont(), "Fast Rolling");
-
-            Futile.stage.AddChild(fastRollLabel);
-
-            fastRollLabel.alignment = FLabelAlignment.Left;
-            fastRollLabel.x = 10.0f;
-            fastRollLabel.y = self.rainWorld.options.ScreenSize.y - 10.0f;
-            fastRollLabel.color = new Color(1.0f, 1.0f, 0.5f);
-            fastRollLabel.isVisible = false;
-        }
-
-        private static void RainWorldGame_ShutDownProcess(On.RainWorldGame.orig_ShutDownProcess orig, RainWorldGame self)
-        {
-            orig(self);
-
-            fastRollLabel.RemoveFromContainer();
         }
 
 
@@ -120,6 +99,15 @@ namespace FastRollButton
             };
         }
 
+        public static bool IsAnyFastRollInput()
+        {
+            for (int i  = 0; i < 4; i++)
+                if (IsFastRollInput(i))
+                    return true;
+
+            return false;
+        }
+
 
 
         // Debug Fast Roll Check
@@ -129,6 +117,8 @@ namespace FastRollButton
 
             CheckIfFastRoll(self);
 
+
+            if (fastRollLabel == null) return;
 
             fastRollLabel.text = "Fast Rolling";
             fastRollLabel.isVisible = fastRollingPlayers.Any(isFastRolling => isFastRolling);
@@ -145,13 +135,13 @@ namespace FastRollButton
         }
 
 
-        private static readonly bool[] fastRollingPlayers = new bool[4];
+        public static readonly bool[] fastRollingPlayers = new bool[4];
 
         private static void CheckIfFastRoll(Player self)
         {
             fastRollingPlayers[self.playerState.playerNumber] = false;
 
-            if (!Options.debugDisplay.Value) return;
+            if (!Options.inputDisplay.Value) return;
 
 
 
@@ -163,6 +153,76 @@ namespace FastRollButton
 
 
             fastRollingPlayers[self.playerState.playerNumber] = true;
+        }
+
+
+
+        // Debug Label
+        private static FLabel? fastRollLabel;
+
+        private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
+        {
+            orig(self, manager);
+
+            if (!Options.debugDisplay.Value) return;
+
+
+            fastRollLabel = new FLabel(Custom.GetFont(), "Fast Rolling");
+
+            Futile.stage.AddChild(fastRollLabel);
+
+            fastRollLabel.alignment = FLabelAlignment.Left;
+            fastRollLabel.x = 10.0f;
+            fastRollLabel.y = self.rainWorld.options.ScreenSize.y - 10.0f;
+            fastRollLabel.color = new Color(1.0f, 1.0f, 0.5f);
+            fastRollLabel.isVisible = false;
+        }
+
+        private static void RainWorldGame_ShutDownProcess(On.RainWorldGame.orig_ShutDownProcess orig, RainWorldGame self)
+        {
+            orig(self);
+
+            fastRollLabel?.RemoveFromContainer();
+        }
+
+
+
+        // Input Display
+        private static void RoomCamera_ClearAllSprites(On.RoomCamera.orig_ClearAllSprites orig, RoomCamera self)
+        {
+            if (Options.inputGraphics[self.cameraNumber]?.cam == self)
+            {
+                Options.inputGraphics[self.cameraNumber]?.Remove();
+                Options.inputGraphics[self.cameraNumber] = null!;
+            }
+            
+            orig(self);
+        }
+
+        private static void RainWorldGame_GrafUpdate(On.RainWorldGame.orig_GrafUpdate orig, RainWorldGame self, float timeStacker)
+        {
+            orig(self, timeStacker);
+
+            if (!Options.inputDisplay.Value) return;
+
+            foreach (InputGraphic display in Options.inputGraphics)
+                display?.Update(timeStacker);
+        }
+
+        private static void RoomCamera_ctor(On.RoomCamera.orig_ctor orig, RoomCamera self, RainWorldGame game, int cameraNumber)
+        {
+            orig(self, game, cameraNumber);
+
+            if (!Options.inputDisplay.Value) return;
+
+            if (Options.inputGraphics.Length <= cameraNumber)
+                Array.Resize(ref Options.inputGraphics, cameraNumber + 1);
+            
+            Options.inputGraphics[self.cameraNumber]?.Remove();
+            InputGraphic ig = new InputGraphic(self);
+            Options.inputGraphics[cameraNumber] = ig;
+            
+            ig.Move();
         }
     }
 }

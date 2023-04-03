@@ -16,7 +16,7 @@ namespace FastRollButton
     {
         public static new ManualLogSource Logger { get; private set; } = null!;
 
-        public const string VERSION = "1.0.3";  
+        public const string VERSION = "1.0.4";  
         public const string MOD_NAME = "Fast Roll Button";
         public const string MOD_ID = "fastrollbutton";
         public const string AUTHOR = "forthbridge";
