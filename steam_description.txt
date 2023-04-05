@@ -1,7 +1,8 @@
 [h1]Provides a per-player configurable keybind to force the necessary analog inputs to fast roll![/h1]
 
-[b]Normally, this is only feasible on controller with precise analog inputs;
-now, you can perform it on keyboard too, with the press of a button![/b]
+[b][u]Fast rolling is a movement tech, normally only possible with analog inputs via a controller or virtual controller
+
+With this mod, you can perform it on keyboard too, with the press of a button![/u][/b]
 
 To perform a fast roll, hold the fast roll button [u]instead[/u] of down when beginning a roll!
 
