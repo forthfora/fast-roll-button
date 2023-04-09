@@ -190,12 +190,12 @@ namespace FastRollButton
         // Input Display
         private static void RoomCamera_ClearAllSprites(On.RoomCamera.orig_ClearAllSprites orig, RoomCamera self)
         {
-            if (Options.inputGraphics[self.cameraNumber]?.cam == self)
+            if (Options.inputGraphics.Length > self.cameraNumber && Options.inputGraphics[self.cameraNumber]?.cam == self)
             {
                 Options.inputGraphics[self.cameraNumber]?.Remove();
                 Options.inputGraphics[self.cameraNumber] = null!;
             }
-            
+
             orig(self);
         }
 
