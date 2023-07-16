@@ -1,0 +1,17 @@
+{
+  "Title": "Fast Roll Button",
+  "Description": "[h1]Provides a per-player configurable keybind to force the necessary analog inputs to fast roll![/h1]\r\n\r\n[b][u]Fast rolling is a movement tech, normally only possible with analog inputs via a controller or virtual controller\r\n\r\nWith this mod, you can perform it on keyboard too, with the press of a button![/u][/b]\r\n\r\nTo perform a fast roll, hold the fast roll button [u]instead[/u] of down when beginning a roll!\r\n\r\nWhen chaining fast rolls, will require you to hold down briefly to begin the roll - any Y input during the roll will override the fast roll input!\r\n\r\n[b](thumbnail by my sister, display based on Input Display by Slime_Cubed)[/b]\r\n[b][u]Source: https://github.com/forthbridge/fast-roll-button[/u][/b]",
+  "ID": "fastrollbutton",
+  "Version": "1.0.7",
+  "TargetGameVersion": "v1.9.07",
+  "Requirements": "",
+  "RequirementNames": "",
+  "Authors": "forthbridge",
+  "Visibility": "Public",
+  "Tags": [
+    "Accessibility",
+    "Tools"
+  ],
+  "WorkshopID": 0,
+  "UploadFilesOnly": false
+}
