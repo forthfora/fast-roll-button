@@ -8,5 +8,5 @@ To perform a fast roll, hold the fast roll button [u]instead[/u] of down when be
 
 When chaining fast rolls, will require you to hold down briefly to begin the roll - any Y input during the roll will override the fast roll input!
 
-[b](Thumbnail by my sister, display based on Input Display by Slime_Cubed)[/b]
+[b](thumbnail by Kimi, display code from Input Display by Slime_Cubed)[/b]
 [b][u]Source: https://github.com/forthbridge/fast-roll-button[/u][/b]
