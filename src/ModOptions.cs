@@ -7,18 +7,21 @@ public class ModOptions : OptionsTemplate
 {
     public static ModOptions Instance { get; } = new();
 
-    #region Options
+    public static void RegisterOI()
+    {
+        if (MachineConnector.GetRegisteredOI(Plugin.MOD_ID) != Instance)
+        {
+            MachineConnector.SetRegisteredOI(Plugin.MOD_ID, Instance);
+        }
+    }
+
+
+    // Configurables
 
     public static Configurable<bool> inputDisplay = Instance.config.Bind("inputDisplay", true, new ConfigurableInfo(
         "When checked, a display will appear indicating whether a fast roll is being performed and whether the fast roll button is pressed." +
         "\nAdapted from Input Display by Slime_Cubed, and fully customizable!",
         null, "", "Input Display?"));
-
-    public static Configurable<bool> debugDisplay = Instance.config.Bind("debugDisplay", false, new ConfigurableInfo(
-        "When checked, enables the debug display - text will appear in the top left hand corner indicating whether a fast roll is being performed." +
-        "\nUnlike the input display, supports indicating multiple players, but doesn't indicate whether the fast roll button is pressed.",
-        null, "", "Debug Display?"));
-
 
 
     public static Configurable<KeyCode> keybindKeyboard = Instance.config.Bind("keybindKeyboard", KeyCode.LeftAlt, new ConfigurableInfo(
@@ -35,8 +38,6 @@ public class ModOptions : OptionsTemplate
 
     public static Configurable<KeyCode> keybindPlayer4 = Instance.config.Bind("keybindPlayer4", KeyCode.Joystick4Button4, new ConfigurableInfo(
         "Keybind to fast roll for Player 4.", null, "", "Player 4"));
-
-    #endregion
 
 
     private const int NUMBER_OF_TABS = 2;
@@ -56,7 +57,6 @@ public class ModOptions : OptionsTemplate
         AddTab(ref tabIndex, "Input");
 
         AddCheckBox(inputDisplay, (string)inputDisplay.info.Tags[0]);
-        AddCheckBox(debugDisplay, (string)debugDisplay.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[tabIndex]);
         AddNewLine(4);
 
@@ -77,10 +77,29 @@ public class ModOptions : OptionsTemplate
         DrawBox(ref Tabs[tabIndex]);
     }
 
-    #region Input Display
+    
+    // Input Display
 
-    public static InputGraphic[] inputGraphics = new InputGraphic[1];
-    public static Vector2 inputDisplayOrigin;
+    public static InputGraphic[] InputGraphics = new InputGraphic[1];
+    public static Vector2 InputDisplayPos
+    {
+        get => new(SavedPosX.Value, SavedPosY.Value);
+        set
+        {
+            if (SavedPosX.Value != value.x || SavedPosY.Value != value.y)
+            {
+                IsDisplayPosDirty = true;
+                SavedPosX.Value = value.x;
+                SavedPosY.Value = value.y;
+            }
+        }
+    }
+
+    public static bool IsDisplayPosDirty { get; set; } = false;
+
+    public static Configurable<float> SavedPosX { get; } = Instance.config.Bind(nameof(SavedPosX), MachineConnector.IsThisModActive("slime-cubed.inputdisplay") ? 8.0f : 64.0f);
+    public static Configurable<float> SavedPosY { get; } = Instance.config.Bind(nameof(SavedPosY), 64.0f);
+
 
     public static Configurable<bool> inputIsIndicator = Instance.config.Bind("inputIsIndicator", false, new ConfigurableInfo(
         "When checked, input is shown by the small indicator, fast roll being performed is shown by the button." +
@@ -145,7 +164,7 @@ public class ModOptions : OptionsTemplate
         AddNewLine(2);
 
 
-        Vector2 offset = new(0.0f, -150.0f);
+        var offset = new Vector2(0.0f, -150.0f);
 
         var _backCol = new OpColorPicker(backColor, new Vector2(32f + offset.x, 159f + offset.y));
         Tabs[tabIndex].AddItems(_backCol, new OpLabel(new Vector2(32f + offset.x, 317f + offset.y), new Vector2(150f + offset.x, 16f + offset.y), "Outline Color"));
@@ -159,6 +178,4 @@ public class ModOptions : OptionsTemplate
 
         DrawBox(ref Tabs[tabIndex]);
     }
-
-    #endregion
 }

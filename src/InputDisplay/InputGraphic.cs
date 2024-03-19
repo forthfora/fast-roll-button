@@ -40,12 +40,11 @@ public class InputGraphic
     {
         buttons = new InputButton[]
         {
-            new InputButton(this, new Vector2(0.0f, 0.0f) * InputButton.Spacing, ModOptions.inputDisplayText.Value , isIndicator => {
-                if (isIndicator == ModOptions.inputIsIndicator.Value)
-                    return Hooks.IsAnyFastRollInput();
-                
-                return Hooks.fastRollingPlayers.Contains(true);
-            }),
+            new InputButton(this,
+                new Vector2(0.0f, 0.0f) * InputButton.Spacing,
+                ModOptions.inputDisplayText.Value,
+                isIndicator => { return isIndicator == ModOptions.inputIsIndicator.Value ? Hooks.IsAnyFastRollInput() : Hooks.IsAnyPlayerFastRolling(); }
+            ),
         };
 
         Move();
@@ -58,10 +57,10 @@ public class InputGraphic
         // Move the input display when left bracket is pressed
         if (Input.GetKey(KeyCode.LeftBracket))
         {
-            ModOptions.inputDisplayOrigin = Input.mousePosition;
+            ModOptions.InputDisplayPos = Input.mousePosition;
 
             if (MachineConnector.IsThisModActive("slime-cubed.inputdisplay"))
-                ModOptions.inputDisplayOrigin -= new Vector2(((InputButton.Size + InputButton.Spacing) / 2.0f) + 5.0f, 0.0f);
+                ModOptions.InputDisplayPos -= new Vector2(((InputButton.Size + InputButton.Spacing) / 2.0f) + 5.0f, 0.0f);
 
             Move();
         }
@@ -75,7 +74,7 @@ public class InputGraphic
             }
             else
             {
-                ModOptions.inputDisplayOrigin = (Vector2)Input.mousePosition + dragOffset;
+                ModOptions.InputDisplayPos = (Vector2)Input.mousePosition + dragOffset;
                 Move();
             }
         }
@@ -84,7 +83,7 @@ public class InputGraphic
             if (Input.GetMouseButtonDown(0) && IsMouseOver)
             {
                 isDragging = true;
-                dragOffset = ModOptions.inputDisplayOrigin - (Vector2)Input.mousePosition;
+                dragOffset = ModOptions.InputDisplayPos - (Vector2)Input.mousePosition;
             }
         }
 
@@ -96,7 +95,7 @@ public class InputGraphic
 
     public void Move()
     {
-        buttonContainer.SetPosition(ModOptions.inputDisplayOrigin - Vector2.one * 0.5f);
+        buttonContainer.SetPosition(ModOptions.InputDisplayPos - Vector2.one * 0.5f);
         buttonContainer.alpha = ModOptions.alpha.Value;
 
 

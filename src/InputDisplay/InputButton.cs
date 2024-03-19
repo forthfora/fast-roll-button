@@ -61,8 +61,8 @@ public class InputButton
         get
         {
             Vector2 mp = Input.mousePosition;
-            mp.x -= ModOptions.inputDisplayOrigin.x + relPos.x;
-            mp.y -= ModOptions.inputDisplayOrigin.y + relPos.y;
+            mp.x -= ModOptions.InputDisplayPos.x + relPos.x;
+            mp.y -= ModOptions.InputDisplayPos.y + relPos.y;
 
             if (mp.x < 0f || mp.y < 0f)
                 return false;

@@ -22,10 +22,6 @@
       <HintPath>..\..\Backups\Rain World\Rain World References\BepInEx\plugins\HOOKS-Assembly-CSharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ImprovedInput">
-      <HintPath>..\..\Backups\Rain World\Rain World References\ImprovedInput.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\Backups\Rain World\Rain World References\RainWorld_Data\Managed\Mono.Cecil.dll</HintPath>
       <Private>False</Private>
@@ -69,7 +65,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /Y &quot;$(TargetDir)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\fastrollbutton\plugins&quot;" />
+    <Exec Command="copy /Y &quot;$(TargetDir)&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\StreamingAssets\mods\fastrollbutton\newest\plugins&quot;" />
   </Target>
 
   <ItemGroup>
