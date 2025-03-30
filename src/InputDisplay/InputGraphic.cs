@@ -36,6 +36,11 @@ public class InputGraphic
         Move();
     }
 
+    public void Destroy()
+    {
+        ButtonContainer.RemoveFromContainer();
+    }
+
     public void Update()
     {
         // Move the input display when left bracket is pressed

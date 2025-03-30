@@ -12,6 +12,11 @@ public static class InputDisplay_Hooks
     // Input Display
     private static void RoomCamera_ClearAllSprites(On.RoomCamera.orig_ClearAllSprites orig, RoomCamera self)
     {
+        if (ModOptions.InputGraphics.TryGetValue(self.cameraNumber, out var inputGraphic))
+        {
+            inputGraphic.Destroy();
+        }
+
         ModOptions.InputGraphics.Remove(self.cameraNumber);
 
         orig(self);
@@ -36,14 +41,13 @@ public static class InputDisplay_Hooks
     {
         orig(self, game, cameraNumber);
 
-        if (!ModOptions.inputDisplay.Value)
+        if (ModOptions.InputGraphics.TryGetValue(self.cameraNumber, out var inputGraphic))
         {
-            return;
+            inputGraphic.Destroy();
         }
 
-        ModOptions.InputGraphics.Remove(cameraNumber);
+        inputGraphic = new InputGraphic();
 
-        var inputGraphic = new InputGraphic();
         ModOptions.InputGraphics[cameraNumber] = inputGraphic;
         inputGraphic.Move();
     }
