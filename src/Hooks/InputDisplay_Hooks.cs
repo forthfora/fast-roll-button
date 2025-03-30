@@ -41,6 +41,11 @@ public static class InputDisplay_Hooks
     {
         orig(self, game, cameraNumber);
 
+        if (!ModOptions.inputDisplay.Value)
+        {
+            return;
+        }
+
         if (ModOptions.InputGraphics.TryGetValue(self.cameraNumber, out var inputGraphic))
         {
             inputGraphic.Destroy();
