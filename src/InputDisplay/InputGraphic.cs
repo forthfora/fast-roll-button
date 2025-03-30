@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace FastRollButton;
 
@@ -7,52 +6,37 @@ namespace FastRollButton;
 // Thanks Slime_Cubed!
 public class InputGraphic
 {
-    public RoomCamera cam;
-    public InputButton[] buttons = null!;
+    public FContainer ButtonContainer { get; }
+    public InputButton[] Buttons { get; set; } = null!;
 
-    public bool IsMouseOver
+    private bool IsDragging { get; set; }
+    private Vector2 DragOffset { get; set; }
+
+    public bool IsMouseOver => Buttons.Any(button => button.IsMouseOver);
+
+    public InputGraphic()
     {
-        get
-        {
-            foreach (InputButton button in buttons) if (button.IsMouseOver) return true;
-            return false;
-        }
-    }
-
-    private bool isDragging;
-    private Vector2 dragOffset;
-
-    public FSprite displaySprite = null!;
-    public FContainer buttonContainer;
-
-
-    public InputGraphic(RoomCamera cam)
-    {
-        this.cam = cam;
-
-        buttonContainer = new FContainer();
-        Futile.stage.AddChild(buttonContainer);
+        ButtonContainer = new FContainer();
+        Futile.stage.AddChild(ButtonContainer);
 
         InitSprites();
     }
 
     public void InitSprites()
     {
-        buttons = new InputButton[]
-        {
+        Buttons =
+        [
             new InputButton(this,
                 new Vector2(0.0f, 0.0f) * InputButton.Spacing,
                 ModOptions.inputDisplayText.Value,
-                isIndicator => { return isIndicator == ModOptions.inputIsIndicator.Value ? Hooks.IsAnyFastRollInput() : Hooks.IsAnyPlayerFastRolling(); }
+                isIndicator => { return isIndicator == ModOptions.inputIsIndicator.Value ? FastRoll_Helpers.IsAnyFastRollInput() : FastRoll_Helpers.IsAnyPlayerFastRolling(); }
             ),
-        };
+        ];
 
         Move();
     }
 
-    public void Remove() => buttonContainer.RemoveFromContainer();
-
-    public void Update(float timeStacker)
+    public void Update()
     {
         // Move the input display when left bracket is pressed
         if (Input.GetKey(KeyCode.LeftBracket))
@@ -60,21 +44,23 @@ public class InputGraphic
             ModOptions.InputDisplayPos = Input.mousePosition;
 
             if (MachineConnector.IsThisModActive("slime-cubed.inputdisplay"))
+            {
                 ModOptions.InputDisplayPos -= new Vector2(((InputButton.Size + InputButton.Spacing) / 2.0f) + 5.0f, 0.0f);
+            }
 
             Move();
         }
 
         // Allow dragging the input display
-        if (isDragging)
+        if (IsDragging)
         {
             if (!Input.GetMouseButton(0))
             {
-                isDragging = false;
+                IsDragging = false;
             }
             else
             {
-                ModOptions.InputDisplayPos = (Vector2)Input.mousePosition + dragOffset;
+                ModOptions.InputDisplayPos = (Vector2)Input.mousePosition + DragOffset;
                 Move();
             }
         }
@@ -82,24 +68,27 @@ public class InputGraphic
         {
             if (Input.GetMouseButtonDown(0) && IsMouseOver)
             {
-                isDragging = true;
-                dragOffset = ModOptions.InputDisplayPos - (Vector2)Input.mousePosition;
+                IsDragging = true;
+                DragOffset = ModOptions.InputDisplayPos - (Vector2)Input.mousePosition;
             }
         }
 
-        foreach (InputButton button in buttons)
+        foreach (var button in Buttons)
+        {
             button.Update();
+        }
 
-        buttonContainer.MoveToFront();
+        ButtonContainer.MoveToFront();
     }
 
     public void Move()
     {
-        buttonContainer.SetPosition(ModOptions.InputDisplayPos - Vector2.one * 0.5f);
-        buttonContainer.alpha = ModOptions.alpha.Value;
+        ButtonContainer.SetPosition(ModOptions.InputDisplayPos - Vector2.one * 0.5f);
+        ButtonContainer.alpha = ModOptions.alpha.Value;
 
-
-        foreach (InputButton button in buttons)
+        foreach (var button in Buttons)
+        {
             button.Move(new Vector2(0.0f, 0.0f));
+        }
     }
 }

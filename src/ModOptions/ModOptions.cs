@@ -15,9 +15,7 @@ public class ModOptions : OptionsTemplate
         }
     }
 
-
     // Configurables
-
     public static Configurable<bool> inputDisplay = Instance.config.Bind("inputDisplay", true, new ConfigurableInfo(
         "When checked, a display will appear indicating whether a fast roll is being performed and whether the fast roll button is pressed." +
         "\nAdapted from Input Display by Slime_Cubed, and fully customizable!",
@@ -46,7 +44,7 @@ public class ModOptions : OptionsTemplate
     {
         base.Initialize();
         Tabs = new OpTab[NUMBER_OF_TABS];
-        int tabIndex = -1;
+        var tabIndex = -1;
 
         AddInputTab(ref tabIndex);
         AddInputDisplayTab(ref tabIndex);
@@ -56,46 +54,48 @@ public class ModOptions : OptionsTemplate
     {
         AddTab(ref tabIndex, "Input");
 
-        AddCheckBox(inputDisplay, (string)inputDisplay.info.Tags[0]);
-        DrawCheckBoxes(ref Tabs[tabIndex]);
+        AddCheckBox(inputDisplay);
+        DrawCheckBoxes(ref Tabs[tabIndex], 150.0f);
         AddNewLine(4);
 
-        DrawKeybinders(keybindKeyboard, ref Tabs[tabIndex]);
-        AddNewLine(1);
+        AddAndDrawKeybinder(keybindKeyboard, ref Tabs[tabIndex]);
+        AddNewLine();
 
-        DrawKeybinders(keybindPlayer1, ref Tabs[tabIndex]);
-        AddNewLine(1);
+        AddAndDrawKeybinder(keybindPlayer1, ref Tabs[tabIndex]);
+        AddNewLine();
 
-        DrawKeybinders(keybindPlayer2, ref Tabs[tabIndex]);
-        AddNewLine(1);
+        AddAndDrawKeybinder(keybindPlayer2, ref Tabs[tabIndex]);
+        AddNewLine();
 
-        DrawKeybinders(keybindPlayer3, ref Tabs[tabIndex]);
-        AddNewLine(1);
+        AddAndDrawKeybinder(keybindPlayer3, ref Tabs[tabIndex]);
+        AddNewLine();
 
-        DrawKeybinders(keybindPlayer4, ref Tabs[tabIndex]);
+        AddAndDrawKeybinder(keybindPlayer4, ref Tabs[tabIndex]);
 
         DrawBox(ref Tabs[tabIndex]);
     }
 
     
     // Input Display
+    public static Dictionary<int, InputGraphic> InputGraphics { get; } = [];
 
-    public static InputGraphic[] InputGraphics = new InputGraphic[1];
     public static Vector2 InputDisplayPos
     {
         get => new(SavedPosX.Value, SavedPosY.Value);
         set
         {
-            if (SavedPosX.Value != value.x || SavedPosY.Value != value.y)
+            if (SavedPosX.Value == value.x && SavedPosY.Value == value.y)
             {
-                IsDisplayPosDirty = true;
-                SavedPosX.Value = value.x;
-                SavedPosY.Value = value.y;
+                return;
             }
+
+            IsDisplayPosDirty = true;
+            SavedPosX.Value = value.x;
+            SavedPosY.Value = value.y;
         }
     }
 
-    public static bool IsDisplayPosDirty { get; set; } = false;
+    public static bool IsDisplayPosDirty { get; set; }
 
     public static Configurable<float> SavedPosX { get; } = Instance.config.Bind(nameof(SavedPosX), MachineConnector.IsThisModActive("slime-cubed.inputdisplay") ? 8.0f : 64.0f);
     public static Configurable<float> SavedPosY { get; } = Instance.config.Bind(nameof(SavedPosY), 64.0f);
@@ -150,7 +150,7 @@ public class ModOptions : OptionsTemplate
         AddCheckBox(outlineColorLabels, (string)outlineColorLabels.info.Tags[0]);
         DrawCheckBoxes(ref Tabs[tabIndex]);
 
-        AddNewLine(1);
+        AddNewLine();
 
         AddFloatSlider(alpha, (string)alpha.info.Tags[0], "0%", "100%");
         AddFloatSlider(scale, (string)scale.info.Tags[0], "20%", "100%");

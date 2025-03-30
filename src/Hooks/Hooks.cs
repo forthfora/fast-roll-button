@@ -1,16 +1,13 @@
-﻿using RWCustom;
-using System;
-using System.Linq;
-using UnityEngine;
+﻿namespace FastRollButton;
 
-
-namespace FastRollButton;
-
-public static partial class Hooks
+public static class Hooks
 {
-    public static void ApplyInit() => On.RainWorld.OnModsInit += RainWorld_OnModsInit;
+    private static bool IsInit { get; set; }
 
-    private static bool IsInit { get; set; } = false;
+    public static void ApplyInit()
+    {
+        On.RainWorld.OnModsInit += RainWorld_OnModsInit;
+    }
 
     private static void RainWorld_OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
     {
@@ -18,16 +15,27 @@ public static partial class Hooks
         {
             ModOptions.RegisterOI();
 
-            if (IsInit) return;
+            if (IsInit)
+            {
+                return;
+            }
+
             IsInit = true;
 
             ApplyHooks();
 
+            // Init Info
             var mod = ModManager.ActiveMods.FirstOrDefault(mod => mod.id == Plugin.MOD_ID);
 
-            Plugin.MOD_NAME = mod.name;
-            Plugin.VERSION = mod.version;
-            Plugin.AUTHORS = mod.authors;
+            if (mod is null)
+            {
+                Plugin.Logger.LogError($"Failed to initialize: ID '{Plugin.MOD_ID}' wasn't found in the active mods list!");
+                return;
+            }
+
+            Plugin.ModName = mod.name;
+            Plugin.Version = mod.version;
+            Plugin.Authors = mod.authors;
         }
         catch (Exception e)
         {
@@ -42,7 +50,7 @@ public static partial class Hooks
 
     private static void ApplyHooks()
     {
-        ApplyFunctionHooks();
-        ApplyInputDisplayHooks();
+        FastRoll_Hooks.ApplyHooks();
+        InputDisplay_Hooks.ApplyHooks();
     }
 }

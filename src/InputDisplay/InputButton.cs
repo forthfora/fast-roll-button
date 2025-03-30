@@ -1,5 +1,4 @@
 ﻿using RWCustom;
-using System;
 using UnityEngine;
 
 namespace FastRollButton;
@@ -9,49 +8,48 @@ namespace FastRollButton;
 public class InputButton
 {
     public static float Size => Mathf.Floor(24f * ModOptions.Scale) * 2f;
-
     public static float Spacing => Size + Mathf.Floor(Size / 6f);
 
-    public InputGraphic parent;
-    public Vector2 relPos;
+    public InputGraphic Parent { get; }
+    public Vector2 RelativePos { get; }
 
-    private readonly FSprite back;
-    private readonly FSprite front;
+    private FSprite Back { get; }
+    private FSprite Front { get; }
 
-    private readonly FLabel key = null!;
-    private readonly FSprite keySprite = null!;
+    private FLabel? KeyLabel { get; }
+    private FSprite? KeySprite { get; }
 
-    private readonly FSprite fastRollIndicator;
-
-    private readonly Func<bool, bool> inputGetter;
-
+    private FSprite FastRollIndicator { get; }
+    private Func<bool, bool> InputGetter { get; }
 
     private InputButton(InputGraphic parent, Vector2 pos, Func<bool, bool> inputGetter)
     {
-        this.parent = parent;
-        this.inputGetter = inputGetter;
+        this.Parent = parent;
+        this.InputGetter = inputGetter;
 
-        relPos = pos;
+        RelativePos = pos;
 
-        back = new FSprite("pixel") { anchorX = 0f, anchorY = 0f, scale = Size, color = ModOptions.backColor.Value };
-        front = new FSprite("pixel") { anchorX = 0f, anchorY = 0f, scale = Size - 2f };
-        fastRollIndicator = new FSprite("deerEyeB") { anchorX = 0f, anchorY = 0f };
+        Back = new FSprite("pixel") { anchorX = 0f, anchorY = 0f, scale = Size, color = ModOptions.backColor.Value };
+        Front = new FSprite("pixel") { anchorX = 0f, anchorY = 0f, scale = Size - 2f };
+        FastRollIndicator = new FSprite("deerEyeB") { anchorX = 0f, anchorY = 0f };
     }
 
     public InputButton(InputGraphic parent, Vector2 pos, string keyName, Func<bool, bool> inputGetter) : this(parent, pos, inputGetter)
     {
-        key = new FLabel(Custom.GetFont(), keyName);
+        KeyLabel = new FLabel(Custom.GetFont(), keyName);
 
         Move(Vector2.zero);
         AddToContainer();
 
         if (ModOptions.Scale < 0.75f)
-            key.text = keyName.Substring(0, 1);
+        {
+            KeyLabel.text = keyName.Substring(0, 1);
+        }
     }
 
     public InputButton(InputGraphic parent, Vector2 pos, FSprite keySprite, Func<bool, bool> inputGetter) : this(parent, pos, inputGetter)
     {
-        this.keySprite = keySprite;
+        this.KeySprite = keySprite;
         Move(Vector2.zero);
         AddToContainer();
     }
@@ -61,82 +59,97 @@ public class InputButton
         get
         {
             Vector2 mp = Input.mousePosition;
-            mp.x -= ModOptions.InputDisplayPos.x + relPos.x;
-            mp.y -= ModOptions.InputDisplayPos.y + relPos.y;
+            mp.x -= ModOptions.InputDisplayPos.x + RelativePos.x;
+            mp.y -= ModOptions.InputDisplayPos.y + RelativePos.y;
 
             if (mp.x < 0f || mp.y < 0f)
+            {
                 return false;
-            
+            }
+
             if (mp.x > Size || mp.y > Size)
+            {
                 return false;
-            
+            }
+
             return true;
         }
     }
 
     public void AddToContainer()
     {
-        FContainer c = parent.buttonContainer;
-        c.AddChild(back);
-        c.AddChild(front);
+        var c = Parent.ButtonContainer;
+        c.AddChild(Back);
+        c.AddChild(Front);
 
-        c.AddChild(fastRollIndicator);
+        c.AddChild(FastRollIndicator);
         
-        if (key != null) c.AddChild(key);
-        if (keySprite != null) c.AddChild(keySprite);
+        if (KeyLabel != null)
+        {
+            c.AddChild(KeyLabel);
+        }
+
+        if (KeySprite != null)
+        {
+            c.AddChild(KeySprite);
+        }
     }
 
     public void RemoveFromContainer()
     {
-        back.RemoveFromContainer();
-        front.RemoveFromContainer();
+        Back.RemoveFromContainer();
+        Front.RemoveFromContainer();
 
-        key?.RemoveFromContainer();
-        keySprite?.RemoveFromContainer();
+        KeyLabel?.RemoveFromContainer();
+        KeySprite?.RemoveFromContainer();
 
-        fastRollIndicator.RemoveFromContainer();
+        FastRollIndicator.RemoveFromContainer();
     }
 
     public void Move(Vector2 origin)
     {
-        Vector2 pos = origin + relPos + Vector2.one * 0.01f;
+        var pos = origin + RelativePos + Vector2.one * 0.01f;
 
-        back.SetPosition(pos);
-        front.x = pos.x + 1f;
-        front.y = pos.y + 1f;
+        Back.SetPosition(pos);
+        Front.x = pos.x + 1f;
+        Front.y = pos.y + 1f;
 
 
-        if (key != null)
+        if (KeyLabel != null)
         {
-            key.x = pos.x + Size / 2f;
-            key.y = pos.y + Size / 2f;
+            KeyLabel.x = pos.x + Size / 2f;
+            KeyLabel.y = pos.y + Size / 2f;
         }
 
-        if (keySprite != null)
+        if (KeySprite != null)
         {
-            keySprite.x = pos.x + Size / 2f;
-            keySprite.y = pos.y + Size / 2f;
+            KeySprite.x = pos.x + Size / 2f;
+            KeySprite.y = pos.y + Size / 2f;
         }
         
-        float rtIndOffset = 1f + Mathf.Floor(5f * Mathf.Min(ModOptions.Scale, 1f));
-        fastRollIndicator.x = pos.x + rtIndOffset;
-        fastRollIndicator.y = pos.y + rtIndOffset;
+        var rtIndOffset = 1f + Mathf.Floor(5f * Mathf.Min(ModOptions.Scale, 1f));
+        FastRollIndicator.x = pos.x + rtIndOffset;
+        FastRollIndicator.y = pos.y + rtIndOffset;
     }
 
     public void Update()
     {
-        bool isInput = inputGetter(false);
-        bool isIndicator = inputGetter(true);
+        var isInput = InputGetter(false);
+        var isIndicator = InputGetter(true);
 
 
-        front.color = isInput ? ModOptions.onColor.Value : ModOptions.offColor.Value;
-        fastRollIndicator.color = isIndicator ? isInput ? ModOptions.offColor.Value : ModOptions.onColor.Value : front.color;
+        Front.color = isInput ? ModOptions.onColor.Value : ModOptions.offColor.Value;
+        FastRollIndicator.color = isIndicator ? isInput ? ModOptions.offColor.Value : ModOptions.onColor.Value : Front.color;
 
 
-        if (key != null)
-            key.color = ModOptions.outlineColorLabels.Value ? ModOptions.backColor.Value : (isInput ? ModOptions.offColor.Value : ModOptions.onColor.Value);
+        if (KeyLabel != null)
+        {
+            KeyLabel.color = ModOptions.outlineColorLabels.Value ? ModOptions.backColor.Value : (isInput ? ModOptions.offColor.Value : ModOptions.onColor.Value);
+        }
 
-        if (keySprite != null)
-            keySprite.color = ModOptions.outlineColorLabels.Value ? ModOptions.backColor.Value : (isInput ? ModOptions.offColor.Value : ModOptions.onColor.Value);
+        if (KeySprite != null)
+        {
+            KeySprite.color = ModOptions.outlineColorLabels.Value ? ModOptions.backColor.Value : (isInput ? ModOptions.offColor.Value : ModOptions.onColor.Value);
+        }
     }
 }

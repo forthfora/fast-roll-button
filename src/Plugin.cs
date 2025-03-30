@@ -10,20 +10,19 @@ using System.Security;
 [module: UnverifiableCode]
 #pragma warning restore CS0618 // Type or member is obsolete
 
-
 namespace FastRollButton;
 
-[BepInPlugin(MOD_ID, MOD_ID, "1.0.0")]
+[BepInPlugin(MOD_ID, MOD_ID, "1.2.0")]
 
 public class Plugin : BaseUnityPlugin
 {
     public const string MOD_ID = "fastrollbutton";
     
-    public static string MOD_NAME = "";
-    public static string VERSION = "";
-    public static string AUTHORS = "";
+    public static string ModName { get; set; } = "";
+    public static string Version { get; set; } = "";
+    public static string Authors { get; set; } = "";
 
-    public static new ManualLogSource Logger { get; private set; } = null!;
+    public new static ManualLogSource Logger { get; private set; } = null!;
 
     public void OnEnable()
     {
